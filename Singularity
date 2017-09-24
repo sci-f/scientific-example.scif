@@ -30,7 +30,7 @@ From: ubuntu:14.04
     if [ $# -eq 0 ]; then
         echo "\nThe following software is installed in this image:"
         ls /scif/apps | sort -u --ignore-case        
-        echo "Example usage: singularity --app <name> <container.img> [command] [args] [options]"  
+        echo "Example usage: singularity --app <name> <container> [command] [args] [options]"  
     else
         exec "$@"
     fi
@@ -47,6 +47,9 @@ From: ubuntu:14.04
     singularity run --app download-rtg -B $DATA:/scif/data <container>
 
     singularity run --app simulate-reads -B $DATA:/scif/data <container>
+    singularity run --app transcript -B $DATA:/scif/data <container>
+    singularity run --app bwa-index-align -B $DATA:/scif/data <container>
+    singularity run --app run-rtg -B $DATA:/scif/data <container>
 
 
 %environment
@@ -97,25 +100,25 @@ From: ubuntu:14.04
 # simulate reads
 # =======================
 
-%apphelp run-simulate-reads
+%apphelp simulate-reads
     Optionally set any of the following environment variables (defaults shown)
     READS (100000000)
     READ_LEN (150)
     GENOME_SIZE (3400000000)
 
 
-%appenv run-simulate-reads
+%appenv simulate-reads
     READS=${READS:-100000000}
     READ_LEN=${READ_LEN:-150}
     GENOME_SIZE=${GENOME_SIZE:-3400000000}
     export GENOME_SIZE READ_LEN READS
 
-%appinstall run-simulate-reads   
+%appinstall simulate-reads   
     wget https://www.niehs.nih.gov/research/resources/assets/docs/artbinmountrainier20160605linux64tgz.tgz
     tar -xzvf artbinmountrainier20160605linux64tgz.tgz 
     mv art_bin_MountRainier/* bin/
 
-%apprun run-simulate-reads
+%apprun simulate-reads
     GENOME="$REF_DIR/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
     FOLD_COVERAGE=$(python -c "print($READS*$READ_LEN/$GENOME_SIZE)")
     art_illumina --rndSeed 1 --in $GENOME --paired --len 75 --fcov $FOLD_COVERAGE --seqSys HS25 --mflen 500 --sdev 20 --noALN --out $FASTQ_DIR/dna_ && gzip $FASTQ_DIR/dna_1.fq && gzip $FASTQ_DIR/dna_2.fq
@@ -125,7 +128,7 @@ From: ubuntu:14.04
 # quantify transcripts
 # =======================
 
-%appinstall run-transcript
+%appinstall transcript
     wget http://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh
     bash Anaconda3-4.1.1-Linux-x86_64.sh -b -p ./anaconda3
     rm Anaconda3-4.1.1-Linux-x86_64.sh
@@ -136,7 +139,7 @@ From: ubuntu:14.04
     bin/conda install -y --channel bioconda kallisto
     bin/conda clean -y --all
 
-%apprun run-transcript
+%apprun transcript
     kallisto index $REF_DIR/gencode.v25.transcripts.fa -i $REF_DIR/kallisto_index
     OUT_DIR=${SINGULARITY_APPDATA}/rna # /scif/data/kallisto
     mkdir -p $OUT_DIR
@@ -147,7 +150,7 @@ From: ubuntu:14.04
 # bwa index and align
 # =======================
 
-%appinstall run-bwa-index-align
+%appinstall bwa-index-align
     git clone https://github.com/lh3/bwa.git build
     cd build && git checkout v0.7.15 && make
     mv -t ../bin bwa bwakit
@@ -157,12 +160,12 @@ From: ubuntu:14.04
     cd samtools-1.5 && ./configure --prefix=../bin
     make && make install
 
-%apprun run-bwa-index-align
+%apprun bwa-index-align
     mkdir -p $DATADIR/Bam
     bwa index -a bwtsw $DATADIR/Reference/Homo_sapiens.GRCh38.dna.primary_assembly.fa
     bwa mem -t $NUMCORES $DATADIR/Reference/Homo_sapiens.GRCh38.dna.primary_assembly.fa $DATADIR/Fastq/dna_1.fq.gz $DATADIR/Fastq/dna_2.fq.gz | samtools view -bhS - > $DATADIR/Bam/container.bam    
 
-%applabels run-bwa-index-align
+%applabels bwa-index-align
     bwa-version v0.7.15
     samtools-version v1.5
 
