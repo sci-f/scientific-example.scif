@@ -1,0 +1,12 @@
+*.img
+*.gz
+*.fa
+*.fq
+*.bam
+*.bai
+data/*
+Reference/*
+Data/*
+Src/slurm*
+*.ipynb_checkpoints
+*.DS_Store
