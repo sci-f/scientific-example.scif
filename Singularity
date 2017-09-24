@@ -86,6 +86,7 @@ From: ubuntu:14.04
 %apprun download-rtg
     # url info for AJtrio was taken from this url
     # https://raw.githubusercontent.com/genome-in-a-bottle/giab_data_indexes/master/AshkenazimTrio/sequence.index.AJtrio_Illumina_2x250bps_06012016
+    mkdir -p $RTG_DIR
 
     ## THESE FILES HAVE BEEN MADE AVAILABLE BY FTP DOWNLOAD
     wget https://stanfordmedicine.box.com/shared/static/beky9c9u05xmljtgj4kq9iuik33xqtbq.gz -O $RTG_DIR/HG002.1.10M.fastq.gz
@@ -117,6 +118,7 @@ From: ubuntu:14.04
     wget https://www.niehs.nih.gov/research/resources/assets/docs/artbinmountrainier20160605linux64tgz.tgz
     tar -xzvf artbinmountrainier20160605linux64tgz.tgz 
     mv art_bin_MountRainier/* bin/
+    chmod u+x bin/art_*
 
 %apprun simulate-reads
     GENOME="$REF_DIR/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
@@ -129,10 +131,10 @@ From: ubuntu:14.04
 # =======================
 
 %appinstall transcript
+    cd /scif/apps && rm -rf transcript
     wget http://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh
-    bash Anaconda3-4.1.1-Linux-x86_64.sh -b -p ./anaconda3
-    rm Anaconda3-4.1.1-Linux-x86_64.sh
-    mv anaconda3/* .
+    bash Anaconda3-4.1.1-Linux-x86_64.sh -b -p ./transcript
+    rm Anaconda3-4.1.1-Linux-x86_64.sh && cd transcript
     bin/conda update -y conda
     bin/conda update -y anaconda
     bin/conda config --add channels bioconda
