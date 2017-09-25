@@ -143,7 +143,7 @@ From: ubuntu:14.04
 
 %apprun transcript
     kallisto index $REF_DIR/gencode.v25.transcripts.fa -i $REF_DIR/kallisto_index
-    OUT_DIR=${SINGULARITY_APPDATA}/rna # /scif/data/kallisto
+    OUT_DIR=${SINGULARITY_APPDATA}/rna # /scif/data/transcript
     mkdir -p $OUT_DIR
     kallisto quant -b 100 --seed=1 --plaintext -t $NUMCORES -i $DATADIR/Reference/kallisto_index $DATADIR/Fastq/rna_1.fq.gz $DATADIR/Fastq/rna_2.fq.gz -o $OUT_DIR
 
@@ -157,15 +157,16 @@ From: ubuntu:14.04
     cd build && git checkout v0.7.15 && make
     mv -t ../bin bwa bwakit
 
-    wget https://github.com/samtools/samtools/releases/download/1.5/samtools-1.5.tar.bz2
-    tar -xzjf samtools-1.5.tar.bz2
-    cd samtools-1.5 && ./configure --prefix=../bin
+    apt-get install -y liblzma-dev
+    cd .. && wget https://github.com/samtools/samtools/releases/download/1.5/samtools-1.5.tar.bz2
+    tar -xvjf samtools-1.5.tar.bz2
+    cd samtools-1.5 && ./configure --prefix=${SINGULARITY_APPROOT}
     make && make install
 
 %apprun bwa-index-align
     mkdir -p $DATADIR/Bam
     bwa index -a bwtsw $DATADIR/Reference/Homo_sapiens.GRCh38.dna.primary_assembly.fa
-    bwa mem -t $NUMCORES $DATADIR/Reference/Homo_sapiens.GRCh38.dna.primary_assembly.fa $DATADIR/Fastq/dna_1.fq.gz $DATADIR/Fastq/dna_2.fq.gz | samtools view -bhS - > $DATADIR/Bam/container.bam    
+    bwa mem -t $NUMCORES $DATADIR/Reference/Homo_sapiens.GRCh38.dna.primary_assembly.fa $DATADIR/Fastq/dna_1.fq.gz $DATADIR/Fastq/dna_2.fq.gz | samtools view -bhS - > $DATADIR/Bam/container.bam  
 
 %applabels bwa-index-align
     bwa-version v0.7.15
