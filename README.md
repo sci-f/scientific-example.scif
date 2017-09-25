@@ -18,7 +18,9 @@ sudo singularity build scif.img Singularity
 ```
 
 ## Evaluation
-For complete methods and results, see the written section of the corresponding paper (TBA). We can briefly state here that we reproduced results across the Docker and Singularity runs.  The aim here is to qualitatively evaluate SCI-F on its ability to expose container metadata, and information about the pipeline and executables inside. As each evaluation is scoped to the goal's of the container, for this example we focus on the purpose of deploying a set of steps that encompass a pipeline to perform variant calling. 
+The containers use the same software to perform the same functions, but notably, the software and executables are organized differently, and called differently. Singularity standard (the first without SCI-F) relies on external [scripts](scripts) and the container is a bit of a black box. Singularity with SCI-F has no external dependencies beyond data, and is neatly organized. So how do we evaluate this?
+
+The aim here is to qualitatively evaluate SCI-F on its ability to expose container metadata, and information about the pipeline and executables inside. As each evaluation is scoped to the goal's of the container, for this example we focus on the purpose of deploying a set of steps that encompass a pipeline to perform variant calling. 
 
 First, the goals of SCI-F:
 
