@@ -481,3 +481,7 @@ For SCI-F apps, you can define help sections for all of the functions that your 
 
 ### 3. Research Evaluation
 An important attribute of having modular software apps is that it allows for separation of files and executables for research, and those that belong to the base system. From a machine learning standpoint, it provides labels for some subset of content in the container that might be used to better understand how different software relates to a pipeline. Minimally, it separates important content from the base, allowing, for example, a recursive tree generated at `/scif` to capture a large majority of additions to the container. Or simple parsing of the build recipe to see what software (possibly outside of this location) was intended for each app. Equally important, having container software installed at a global at `%post` also says important things about it - that it perhaps is important for more than one software module, or is more of a system library.
+
+
+## Conclusion
+SCI-F clearly has the advantage when it comes to a container creator embedding his or her work with implied metadata about software and container contents. SCI-F also makes it easier to package different run scripts with the container, and expose them easily to the user. However, this does not mean that the standard approach of using a container as a general toolbox and distributing it with a series of external callers is bad or wrong. The choice to use (or not use) SCI-F apps is largely dependent on the goals of the creator, and the intended users.
